@@ -8,5 +8,8 @@ public interface IDoctorRepo {
 	public void create(Doctor doctor);
 	public Doctor read(Integer id); 
 	public void update(Doctor doctor); 
-	public void delete(Integer id); 
+	public void delete(Integer id);
+	public Doctor buscarDoctorCedula(String cedula) ;
+	
+	
 }

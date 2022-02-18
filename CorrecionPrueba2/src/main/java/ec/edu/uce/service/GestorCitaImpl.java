@@ -3,6 +3,8 @@ package ec.edu.uce.service;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -11,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import ec.edu.uce.modelo.CitaMedica;
+import ec.edu.uce.modelo.CitaRealizada;
 import ec.edu.uce.modelo.Doctor;
 import ec.edu.uce.modelo.Paciente;
 import ec.edu.uce.repository.CitaMedicaRepoImpl;
@@ -22,11 +25,28 @@ public class GestorCitaImpl implements IGestorCita{
 	@Autowired 
 	private ICitaMedicaService citaService;
 	
+	@Autowired
+	private IPacienteService pacienteService;
+	
+	@Autowired
+	private IDoctorService doctorService;
+	
 	@Override
 	public void agendarCita(String numeroCita, LocalDateTime fecha, BigDecimal valor, String lugar, String cedulaDoctor,
 			String cedulaPaciente) {
-		// TODO Auto-generated method stub
-		this.citaService.agendarCita(numeroCita, fecha, valor, lugar, cedulaDoctor, cedulaPaciente);
+		CitaMedica citaInsertar=new CitaMedica();
+		citaInsertar.setNumero(numeroCita);
+		citaInsertar.setFecha(fecha);
+		citaInsertar.setValor(valor);
+		
+		Doctor doctorCita=this.doctorService.buscarDoctorCedula(cedulaDoctor);
+			
+		citaInsertar.setDoctor(doctorCita);
+				
+		Paciente pacienteCita=this.pacienteService.buscarPacienteCedula(cedulaPaciente);
+		
+		citaInsertar.setPaciente(pacienteCita);
+		this.citaService.create(citaInsertar);
 	}
 
 	@Override
@@ -72,6 +92,32 @@ public class GestorCitaImpl implements IGestorCita{
 		cita.setReceta(receta);
 		cita.setFechaProximaCita(fechaProximaCita);
 		this.citaService.update(cita);
+	}
+
+	@Override
+	public List<CitaRealizada> reporteCitas() {
+		//citas medicas que ya fueron realizadas y que tienen un diagnostico emitido
+		List<CitaRealizada> citas=this.citaService.reporteCitas();
+		List<CitaRealizada> citasRealizadas=new ArrayList<>();
+		for (CitaRealizada c : citas) {
+			if(c.getDiagnostico()!=null) {
+				citasRealizadas.add(c);
+			}
+		}
+		
+		return citasRealizadas;
+	}
+
+	@Override
+	public List<CitaMedica> citasDoctor(String cedulaDoctor) {
+		// TODO Auto-generated method stub
+		return this.citaService.citasDoctor(cedulaDoctor);
+	}
+
+	@Override
+	public List<CitaRealizada> reporteCitasTotales() {
+		// TODO Auto-generated method stub
+		return this.citaService.reporteCitas();
 	}
 
 }

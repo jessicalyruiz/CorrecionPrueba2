@@ -17,8 +17,10 @@ import org.springframework.stereotype.Repository;
 
 
 import ec.edu.uce.modelo.CitaMedica;
+import ec.edu.uce.modelo.CitaRealizada;
 import ec.edu.uce.modelo.Doctor;
 import ec.edu.uce.modelo.Paciente;
+
 
 
 @Repository
@@ -56,26 +58,7 @@ public class CitaMedicaRepoImpl implements ICitaMedicaRepo {
 		this.entityManager.remove(citaBorar);
 	}
 
-	@Override
-	public void agendarCita(String numeroCita, LocalDateTime fecha, BigDecimal valor, String lugar, String cedulaDoctor,
-			String cedulaPaciente) {
-		CitaMedica citaInsertar=new CitaMedica();
-		citaInsertar.setNumero(numeroCita);
-		citaInsertar.setFecha(fecha);
-		citaInsertar.setValor(valor);
-		
-		Doctor doctorCita=new Doctor();
-		doctorCita.setCedula(cedulaDoctor);
-		
-		citaInsertar.setDoctor(doctorCita);
-		
-		
-		Paciente pacienteCita=new Paciente();
-		pacienteCita.setCedula(cedulaPaciente);
-		citaInsertar.setPaciente(pacienteCita);
-		
-		this.entityManager.persist(citaInsertar);
-	}
+	
 
 	@Override
 	public void acturalizarCita(String numeroCita, String diagnostico, String receta, LocalDateTime fechaProximaCita) {
@@ -117,6 +100,38 @@ public class CitaMedicaRepoImpl implements ICitaMedicaRepo {
 
 		return myQuery.getSingleResult();
 	}
+
+	@Override
+	public List<CitaRealizada> reporteCitas() {
+		//citas medicas que ya fueron realizadas y que tienen un diagnostico emitido
+		
+		
+		TypedQuery<CitaRealizada> myQuery= this.entityManager.createQuery("SELECT NEW ec.edu.uce.modelo.CitaRealizada(c.numero,c.valor,c.fecha, c.diagnostico, c.receta, c.paciente.nombre, c.paciente.apellido, c.paciente.cedula, c.doctor.nombre,c.doctor.apellido,  c.doctor.cedula)  FROM CitaMedica c JOIN  c.doctor d JOIN c.paciente p",CitaRealizada.class);
+		
+	
+		return myQuery.getResultList();
+		
+	}
+
+	@Override
+	public List<CitaMedica> citasDoctor(String cedulaDoctor) {
+		TypedQuery<CitaMedica> myQuery=this.entityManager.createQuery("Select c from CitaMedica c JOIN c.doctor d where d.cedula=:valor",CitaMedica.class);
+		myQuery.setParameter("valor", cedulaDoctor);
+
+		//carga relacionamientos
+		List<CitaMedica> listaCitas=myQuery.getResultList();
+		for (CitaMedica c : listaCitas) {
+			LOG.info("doctor"+ c.getDoctor());
+			//LOG.info("Paciente: "+ c.getPaciente());
+		}
+		
+		
+		
+		return myQuery.getResultList();
+	}
+
+
+	
 
 
 }

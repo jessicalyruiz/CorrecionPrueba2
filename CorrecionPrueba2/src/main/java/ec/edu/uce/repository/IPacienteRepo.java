@@ -8,4 +8,6 @@ public interface IPacienteRepo {
 	public Paciente read(Integer id); 
 	public void update(Paciente paciente); 
 	public void delete(Integer id); 
+	
+	public Paciente buscarPacienteCedula(String cedula);
 }

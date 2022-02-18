@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import ec.edu.uce.modelo.CitaMedica;
+import ec.edu.uce.modelo.CitaRealizada;
 import ec.edu.uce.modelo.Doctor;
 import ec.edu.uce.modelo.Paciente;
 import ec.edu.uce.repository.ICitaMedicaRepo;
@@ -19,12 +20,6 @@ public class CitaMedicaServiceImpl implements ICitaMedicaService{
 	@Autowired
 	private ICitaMedicaRepo citaRepo;
 
-	@Override
-	public void agendarCita(String numeroCita, LocalDateTime fecha, BigDecimal valor, String lugar, String cedulaDoctor,
-			String cedulaPaciente) {
-		// TODO Auto-generated method stub
-		this.citaRepo.agendarCita(numeroCita, fecha, valor, lugar, cedulaDoctor, cedulaPaciente);
-	}
 
 	@Override
 	public void acturalizarCita(String numeroCita, String diagnostico, String receta, LocalDateTime fechaProximaCita) {
@@ -85,5 +80,17 @@ public class CitaMedicaServiceImpl implements ICitaMedicaService{
 	public CitaMedica buscarNumeroCita(String numero) {
 		// TODO Auto-generated method stub
 		return this.citaRepo.buscarNumeroCita(numero);
+	}
+
+	@Override
+	public List<CitaRealizada> reporteCitas() {
+		// TODO Auto-generated method stub
+		return this.citaRepo.reporteCitas();
+	}
+
+	@Override
+	public List<CitaMedica> citasDoctor(String cedulaDoctor) {
+		// TODO Auto-generated method stub
+		return this.citaRepo.citasDoctor(cedulaDoctor);
 	}
 }

@@ -35,6 +35,12 @@ public class PacienteServiceImpl implements IPacienteService{
 		// TODO Auto-generated method stub
 		this.pacienteRepo.delete(id);
 	}
+
+	@Override
+	public Paciente buscarPacienteCedula(String cedula) {
+		// TODO Auto-generated method stub
+		return this.pacienteRepo.buscarPacienteCedula(cedula);
+	}
 	
 	
 }
